@@ -1,0 +1,11 @@
+
+# ftp/s , sftp for .net
+https://github.com/EvotecIT/Transferetto
+
+# usage
+https://evotec.xyz/easy-way-to-connect-to-ftps-and-sftp-using-powershell/ 
+
+# microsoft specs
+https://winprotocoldoc.blob.core.windows.net/productionwindowsarchives/MS-FTPS/%5bMS-FTPS%5d.pdf
+
+
