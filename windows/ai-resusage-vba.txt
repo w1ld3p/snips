@@ -1,0 +1,49 @@
+Option Explicit
+
+Private Declare Function GetCurrentProcess Lib "kernel32" () As Long
+Private Declare Function GetProcessTimes Lib "kernel32" (ByVal hProcess As Long, lpCreationTime As Any, lpExitTime As Any, lpKernelTime As Any, lpUserTime As Any) As Long
+Private Declare Function GetProcessMemoryInfo Lib "psapi.dll" (ByVal hProcess As Long, ppsmemCounters As Any, ByVal cb As Long) As Long
+
+Private Type FILETIME
+    dwLowDateTime As Long
+    dwHighDateTime As Long
+End Type
+
+Private Type PROCESS_MEMORY_COUNTERS_EX
+    cb                          As Long
+    PageFaultCount              As Long
+    PeakWorkingSetSize          As Long
+    WorkingSetSize              As Long
+    QuotaPeakPagedPoolUsage     As Long
+    QuotaPagedPoolUsage         As Long
+    QuotaPeakNonPagedPoolUsage  As Long
+    QuotaNonPagedPoolUsage      As Long
+    PagefileUsage               As Long
+    PeakPagefileUsage           As Long
+    PrivateUsage                As Long
+End Type
+
+Public Sub GetResourceUsage()
+    Dim hProcess As Long
+    Dim kernelTime As FILETIME
+    Dim userTime As FILETIME
+    Dim memCounters As PROCESS_MEMORY_COUNTERS_EX
+
+    hProcess = GetCurrentProcess()
+
+    ' Get CPU usage
+    GetProcessTimes hProcess, 0, 0, kernelTime, userTime
+    Dim kernelTimeMs As Double
+    Dim userTimeMs As Double
+    kernelTimeMs = (kernelTime.dwHighDateTime * 429496.7296 + kernelTime.dwLowDateTime / 10000) / 1000
+    userTimeMs = (userTime.dwHighDateTime * 429496.7296 + userTime.dwLowDateTime / 10000) / 1000
+    Debug.Print "CPU Kernel Time (ms): " & kernelTimeMs
+    Debug.Print "CPU User Time (ms): " & userTimeMs
+
+    ' Get Memory usage
+    memCounters.cb = Len(memCounters)
+    GetProcessMemoryInfo hProcess, memCounters, memCounters.cb
+    Debug.Print "Working Set Size (bytes): " & memCounters.WorkingSetSize
+    Debug.Print "Private Usage (bytes): " & memCounters.PrivateUsage
+End Sub
+
